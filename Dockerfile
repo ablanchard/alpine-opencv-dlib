@@ -50,12 +50,14 @@ ARG RUNTIME_DEPS='libpng libjpeg-turbo giflib openblas libx11'
 ARG BUILD_DEPS='wget unzip cmake build-base linux-headers libpng-dev libjpeg-turbo-dev giflib-dev openblas-dev libx11-dev'
 ARG LIB_PREFIX='/usr/local'
 
-ENV DLIB_VERSION=19.8 \
+ENV DLIB_VERSION=19.17 \
     LIB_PREFIX=${LIB_PREFIX} \
     DLIB_INCLUDE_DIR='$LIB_PREFIX/include' \
     DLIB_LIB_DIR='$LIB_PREFIX/lib'
 
 RUN echo "Dlib: ${DLIB_VERSION}" \
+    && apk add --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
+    --update --no-cache python3-dev \
     && apk add -u --no-cache $RUNTIME_DEPS \
     && apk add -u --no-cache --virtual .build-dependencies $BUILD_DEPS \
     && wget -q https://github.com/davisking/dlib/archive/v${DLIB_VERSION}.zip -O dlib.zip \
@@ -71,15 +73,5 @@ RUN echo "Dlib: ${DLIB_VERSION}" \
     && mv dlib-${DLIB_VERSION} dlib \
     && rm dlib.zip \
     && cd dlib \
-    && mkdir -p build \
-    && cd build \
-    && cmake $dlib_cmake_flags .. \
-    && make -j $(getconf _NPROCESSORS_ONLN) \
-    && cd /dlib/build \
-    && make install \
-    && cp /dlib/dlib/*.txt $LIB_PREFIX/include/dlib/ \
-    && cd / \
-    && rm -rf /dlib \
-    && /usr/glibc-compat/sbin/ldconfig \
-    && apk del .build-dependencies \
+    && python3 setup.py install \
     && rm -rf /var/cache/apk/* /usr/share/man /usr/local/share/man /tmp/*
