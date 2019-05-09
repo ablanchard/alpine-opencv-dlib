@@ -68,6 +68,8 @@ RUN echo "Dlib: ${DLIB_VERSION}" \
     -D DLIB_GIF_SUPPORT=ON \
     -D DLIB_PNG_SUPPORT=ON \
     -D DLIB_JPEG_SUPPORT=ON \
+    -D USE_SSE4_INSTRUCTIONS=ON \
+    -D USE_AVX_INSTRUCTIONS=OFF \
     -D DLIB_USE_CUDA=OFF" \
     && unzip -qq dlib.zip \
     && mv dlib-${DLIB_VERSION} dlib \
